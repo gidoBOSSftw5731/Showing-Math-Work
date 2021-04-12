@@ -49,21 +49,24 @@ func main() {
 	// Runs once per deposit cycle
 	for {
 		cycles += *tBtwnCmpnd
+
+		var i int
 		// if you, say compound annaully and invest quarterly, this would only run at the
 		// end of each year, by incrementing the cycles var until it is >= 1
 		for cycles >= 1 {
+			i++
 			// divide by 100 because percentages
 			total += total * (*interestRate / 100)
+
+			//check if limit has been reached
+			if total >= *limit && *limit != 0 {
+				log.Fatalf("At limit, exiting with interest of %v after %v iterations and %v extra compoundings",
+					total, ctr, i)
+			}
 			cycles--
 		}
 		log.Infof("Finished compounding interest, balance is now %v after %v iterations",
 			total, ctr)
-
-		//check if limit has been reached
-		if total >= *limit && *limit != 0 {
-			log.Fatalf("At limit, exiting with interest of %v after %v iterations",
-				total, ctr)
-		}
 
 		log.Infof("Adding %v to total", *dollarsInvested)
 		total += *dollarsInvested
